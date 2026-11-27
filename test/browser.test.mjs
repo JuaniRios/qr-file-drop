@@ -3,7 +3,7 @@
 //  2. Turn those frames into a fake camera video (Y4M).
 //  3. Receiver browser: load once online, wait for "Ready to work offline",
 //     go offline, reload, start the (fake) camera, receive, save, compare bytes.
-// Needs Chromium: set CHROME=/path/to/chrome (default: nix chromium in PATH).
+// Needs Chromium: set CHROME=/path/to/chrome (default: chromium in PATH).
 import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
 import { chromium } from "playwright-core";
@@ -20,8 +20,12 @@ const work = mkdtempSync(join(process.env.TEST_TMP || tmpdir(), "qfd-"));
 let server, base, origin;
 const FILE = new Uint8Array(randomBytes(24 * 1024));
 
-before(async () => { server = await serve(0); origin = `http://127.0.0.1:${server.address().port}`; base = origin + "/"; });
-after(() => server.close());
+// BASE_URL=https://juanirios.github.io/qr-file-drop/ runs the same checks against the live site.
+before(async () => {
+  if (process.env.BASE_URL) { base = process.env.BASE_URL; origin = new URL(base).origin; return; }
+  server = await serve(0); origin = `http://127.0.0.1:${server.address().port}`; base = origin + "/";
+});
+after(() => server && server.close());
 
 function guard(ctx) {
   const foreign = [], errors = [];
