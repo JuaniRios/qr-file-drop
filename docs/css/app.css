@@ -1,0 +1,85 @@
+:root {
+  --bg: #f6f7fb; --fg: #111827; --muted: #5b6475; --card: #ffffff; --line: #d9dee8;
+  --blue: #1f4fd8; --blue-fg: #ffffff; --green: #0f8a4b; --green-fg: #ffffff; --err: #b42318;
+  color-scheme: light dark;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #0f1115; --fg: #eef1f6; --muted: #a3acbd; --card: #191c23; --line: #2c313c; --blue: #4d7bff; --green: #23a466; --err: #ff6b5e; }
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--fg);
+  font: 18px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  min-height: 100vh; display: flex; flex-direction: column;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+[hidden] { display: none !important; }
+.top { display: flex; align-items: center; gap: 12px; padding: 12px 16px; }
+.brand { font-weight: 700; white-space: nowrap; }
+.home-link { white-space: nowrap; }
+.offline { margin-left: auto; font-size: 14px; color: var(--green); background: color-mix(in srgb, var(--green) 12%, transparent); padding: 3px 10px; border-radius: 99px; white-space: nowrap; }
+@media (max-width: 420px) { .offline { font-size: 12px; padding: 2px 8px; } .brand { font-size: 16px; } }
+main { flex: 1; width: 100%; max-width: 980px; margin: 0 auto; padding: 8px 16px 24px; }
+footer { text-align: center; font-size: 13px; color: var(--muted); padding: 16px; }
+footer a, .link { color: var(--blue); background: none; border: 0; font: inherit; cursor: pointer; padding: 0; }
+.lead { font-size: 20px; color: var(--muted); max-width: 640px; }
+.choices { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; }
+.choices.phone { grid-template-columns: 1fr; }
+.choices.phone .receive { order: -1; }
+.big {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  width: 100%; min-height: 180px; border: 0; border-radius: 22px; cursor: pointer;
+  font-family: inherit; font-weight: 700; font-size: 30px; line-height: 1.2; padding: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.12);
+}
+.big small { font-weight: 400; font-size: 16px; opacity: .9; }
+.big .ico { font-size: 44px; }
+.big.send { background: var(--blue); color: var(--blue-fg); }
+.big.receive { background: var(--green); color: var(--green-fg); }
+.big.preferred { outline: 4px solid color-mix(in srgb, var(--fg) 25%, transparent); outline-offset: 3px; }
+.big:active { transform: scale(.99); }
+.help, .advanced { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 12px 16px; margin: 12px 0; }
+.help summary, .advanced summary { cursor: pointer; font-weight: 600; }
+.kbd { display: inline-block; border: 1px solid var(--line); border-radius: 6px; padding: 0 6px; }
+.drop {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; text-align: center;
+  min-height: 300px; border: 3px dashed var(--blue); border-radius: 22px; background: var(--card); cursor: pointer; padding: 24px;
+}
+.drop.over { background: color-mix(in srgb, var(--blue) 12%, var(--card)); }
+.drop .ico { font-size: 56px; }
+.drop-title { font-size: 30px; font-weight: 700; }
+.drop-sub { color: var(--muted); font-size: 20px; }
+.note, .hint { color: var(--muted); }
+.tiny { color: var(--muted); font-size: 14px; }
+.fileinfo { font-size: 20px; margin: 4px 0 12px; word-break: break-word; }
+.fileinfo span { color: var(--muted); }
+.qrwrap { background: #fff; border-radius: 16px; padding: 12px; display: flex; justify-content: center; align-items: center; }
+.qrwrap canvas { image-rendering: pixelated; image-rendering: crisp-edges; display: block; max-width: 100%; height: auto; }
+.qrwrap:fullscreen, .qrwrap.fs { position: fixed; inset: 0; border-radius: 0; padding: 0; z-index: 10; background: #fff; }
+.qrwrap:-webkit-full-screen { background: #fff; width: 100%; height: 100%; }
+.exit-fs { position: absolute; top: 12px; right: 12px; z-index: 11; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; margin: 14px 0; }
+.btn { font: inherit; font-size: 17px; padding: 12px 18px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--fg); cursor: pointer; }
+.btn.primary { background: var(--blue); color: var(--blue-fg); border-color: var(--blue); }
+.advanced label { display: block; margin: 10px 0; font-size: 16px; }
+.advanced select, .advanced input { display: block; font: inherit; font-size: 16px; padding: 8px; margin-top: 4px; width: 100%; max-width: 320px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); }
+.adv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 0 16px; }
+.viewfinder { position: relative; width: 100%; max-width: 520px; margin: 0 auto; aspect-ratio: 1; overflow: hidden; border-radius: 18px; background: #000; }
+.viewfinder video { width: 100%; height: 100%; object-fit: cover; }
+.frame-guide { position: absolute; inset: 8%; border: 3px solid rgba(255,255,255,.75); border-radius: 12px; pointer-events: none; }
+.status { font-size: 20px; font-weight: 600; margin: 14px 0 8px; text-align: center; }
+.progress { height: 28px; background: var(--line); border-radius: 99px; overflow: hidden; }
+.bar { height: 100%; width: 0; background: var(--green); transition: width .2s; }
+.rx-line { display: flex; justify-content: space-between; font-size: 18px; margin-top: 6px; }
+#rxDone { text-align: center; }
+.done-ico { font-size: 64px; }
+#rxDone .big { margin: 16px 0; min-height: 120px; }
+.error { position: fixed; left: 16px; right: 16px; bottom: 16px; max-width: 640px; margin: 0 auto; background: var(--card); border: 2px solid var(--err); border-radius: 16px; padding: 16px; box-shadow: 0 8px 30px rgba(0,0,0,.25); z-index: 20; max-height: 80vh; overflow: auto; }
+.error h3 { margin: 0 0 8px; color: var(--err); }
+.error ol { padding-left: 22px; }
+@media (max-width: 640px) {
+  .choices { grid-template-columns: 1fr; }
+  .big { min-height: 150px; font-size: 28px; }
+  .drop { min-height: 220px; }
+}

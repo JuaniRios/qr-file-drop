@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>QR File Drop</title>
+<meta name="description" content="Move a file from your computer to your phone with your camera. Works offline. Nothing is uploaded.">
+<meta name="theme-color" content="#1f4fd8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="File Drop">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/favicon-32.png" type="image/png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<header class="top">
+  <button class="link home-link" id="homeLink" hidden>← Back</button>
+  <span class="brand">QR File Drop</span>
+  <span class="offline" id="offlineBadge" hidden>✓ Ready to work offline</span>
+</header>
+
+<main>
+  <!-- HOME -->
+  <section id="home" class="view">
+    <p class="lead">Move a file from your computer to your phone using the camera. No internet, no cables, nothing uploaded.</p>
+    <div class="choices" id="choices">
+      <button class="big send" id="goSend"><span class="ico">💻</span>Send a file<small>on the computer that has the file</small></button>
+      <button class="big receive" id="goReceive"><span class="ico">📱</span>Receive a file<small>on the phone that should get it</small></button>
+    </div>
+    <details class="help">
+      <summary>How does it work?</summary>
+      <ol>
+        <li>Open this same page on the computer and on the phone.</li>
+        <li>On the computer, tap <b>Send a file</b> and choose the file. A moving square code appears.</li>
+        <li>On the phone, tap <b>Receive a file</b>, then <b>Start camera</b>, and point it at the code.</li>
+        <li>Hold still until the bar is full, then tap <b>Save file</b>.</li>
+      </ol>
+    </details>
+    <details class="help" id="installHelp">
+      <summary>Use it without internet (add to Home Screen)</summary>
+      <p>Open this page once while online. When you see <b>✓ Ready to work offline</b> at the top, it works with Wi‑Fi and data off.</p>
+      <p><b>iPhone (Safari):</b> tap the Share button <span class="kbd">⬆︎</span>, scroll down, tap <b>Add to Home Screen</b>, then <b>Add</b>.</p>
+      <p><b>Android (Chrome):</b> tap the menu <span class="kbd">⋮</span>, then <b>Add to Home screen</b> or <b>Install app</b>.</p>
+      <p><b>Mac:</b> in Chrome, click the install icon at the right of the address bar. In Safari, choose <b>File → Add to Dock</b>. Or just bookmark it.</p>
+    </details>
+  </section>
+
+  <!-- SEND -->
+  <section id="send" class="view" hidden>
+    <div id="pick">
+      <label class="drop" id="drop" for="fileInput">
+        <input type="file" id="fileInput" hidden>
+        <span class="ico">📄</span>
+        <span class="drop-title">Drop a file here</span>
+        <span class="drop-sub">or click to choose one</span>
+      </label>
+      <p class="note">Small files work best. A 1 MB photo takes about 4 minutes. Turn your screen brightness up.</p>
+    </div>
+    <div id="showing" hidden>
+      <div class="fileinfo"><b id="sendName"></b> <span id="sendSize"></span></div>
+      <div class="qrwrap" id="qrwrap">
+        <canvas id="qr" aria-label="Moving code with your file"></canvas>
+        <button class="exit-fs" id="exitFs" hidden>Exit full screen</button>
+      </div>
+      <p class="hint" id="sendHint">On your phone, open this page, tap <b>Receive a file</b> and point the camera here. Keep this code visible until the phone says it is done.</p>
+      <div class="row">
+        <button class="btn primary" id="fsBtn">Full screen</button>
+        <button class="btn" id="pauseBtn">Pause</button>
+        <button class="btn" id="anotherBtn">Send a different file</button>
+      </div>
+      <p class="tiny" id="sendStats"></p>
+    </div>
+    <details class="advanced" id="sendAdvanced">
+      <summary>Advanced</summary>
+      <label>Speed
+        <select id="preset"></select>
+      </label>
+      <div class="adv-grid">
+        <label>Bytes per code <input type="number" id="advBlock" min="64" max="1600" step="4"></label>
+        <label>Codes per second <input type="number" id="advFps" min="1" max="30" step="1"></label>
+        <label>Error correction
+          <select id="advEcc"><option value="L">Low (more data)</option><option value="M">Medium</option><option value="Q">High</option></select>
+        </label>
+      </div>
+      <p class="tiny">The phone needs to see each code clearly. If it gets stuck, choose “Slower”. Changing size or error correction restarts the transfer on the phone.</p>
+    </details>
+  </section>
+
+  <!-- RECEIVE -->
+  <section id="receive" class="view" hidden>
+    <div id="camStart">
+      <button class="big receive" id="startCam"><span class="ico">📷</span>Start camera</button>
+      <p class="note">Your phone will ask to use the camera. Tap <b>Allow</b>. Nothing leaves your phone.</p>
+    </div>
+    <div id="camLive" hidden>
+      <div class="viewfinder">
+        <video id="video" playsinline muted autoplay></video>
+        <div class="frame-guide"></div>
+      </div>
+      <div class="status" id="rxStatus">Point the camera at the code on the computer.</div>
+      <div class="progress"><div class="bar" id="rxBar"></div></div>
+      <div class="rx-line"><span id="rxPct">0%</span><span id="rxEta"></span></div>
+      <p class="tiny" id="rxFile"></p>
+      <div class="row"><button class="btn" id="stopCam">Stop camera</button></div>
+    </div>
+    <div id="rxDone" hidden>
+      <div class="done-ico">✅</div>
+      <h2>File received</h2>
+      <p class="fileinfo"><b id="doneName"></b> <span id="doneSize"></span></p>
+      <button class="big send" id="saveBtn">⬇︎ Save file</button>
+      <p class="tiny" id="saveHint"></p>
+      <p><a href="#" id="altSave" class="link">Other ways to save</a></p>
+      <button class="btn" id="againBtn">Receive another file</button>
+    </div>
+  </section>
+
+  <div class="error" id="error" hidden role="alert">
+    <h3 id="errTitle"></h3>
+    <div id="errBody"></div>
+    <div class="row"><button class="btn primary" id="errRetry">Try again</button><button class="btn" id="errClose">Close</button></div>
+  </div>
+</main>
+
+<footer><a href="vendor/LICENSES.txt">Open-source licenses</a> · Nothing you send leaves your devices.</footer>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
